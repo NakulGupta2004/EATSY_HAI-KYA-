@@ -6,6 +6,7 @@ const fs = require('fs');
 require('dotenv').config();
 const blogRoutes = require('./routes/blogRoutes');
 const restaurantRoutes = require('./routes/restaurantRoutes');
+const dishRoutes = require('./routes/dishRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -53,6 +54,7 @@ mongoose.connection.on('disconnected', () => {
 // Use blog routes
 app.use('/api/blogs', blogRoutes);
 app.use('/api/restaurants', restaurantRoutes);
+app.use('/api', dishRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

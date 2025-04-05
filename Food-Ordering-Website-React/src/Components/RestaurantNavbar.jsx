@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 
-function RestaurantNavbar({ categories = ["Pizza", "Burgers", "Desserts", "Drinks"] }) {
+function RestaurantNavbar({ categories = ["Pizza", "Burger", "Pasta", "Dessert", "Drink"] }) {
+  const [activeCategory, setActiveCategory] = useState("All");
+
   return (
-    <div className="nav">
+    <div className="restaurant-nav">
       <ul>
-        <li>All</li>
+        <li 
+          className={activeCategory === "All" ? "active" : ""}
+          onClick={() => setActiveCategory("All")}
+        >
+          All
+        </li>
         {categories.map((category, index) => (
-          <li key={index}>{category}</li>
+          <li 
+            key={index}
+            className={activeCategory === category ? "active" : ""}
+            onClick={() => setActiveCategory(category)}
+          >
+            {category}
+          </li>
         ))}
       </ul>
     </div>
