@@ -1,0 +1,22 @@
+/* Ensure footer is properly positioned */
+.home-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.home-page-wrapper footer {
+  margin-top: auto;
+}
+
+.restaurant-container {
+  flex: 1;
+  padding-bottom: 60px; /* Add space for the footer */
+}
+
+/* Fix for footer styling */
+footer {
+  background-color: #2b2b2b !important;
+  color: white !important;
+  width: 100% !important;
+}

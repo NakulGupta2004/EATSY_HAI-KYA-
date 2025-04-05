@@ -1,0 +1,515 @@
+/* ...existing code... */
+
+/* Restaurant Grid Layout */
+.restaurant-container {
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+
+.section-title {
+  font-size: 32px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 700;
+  color: #333;
+}
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.restaurant-card {
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.restaurant-image {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.restaurant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.restaurant-card:hover .restaurant-image img {
+  transform: scale(1.1);
+}
+
+.restaurant-info {
+  padding: 20px;
+}
+
+.restaurant-info h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.restaurant-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.restaurant-rating span:first-child {
+  color: #ff9800;
+  margin-right: 5px;
+}
+
+.restaurant-cuisine {
+  color: #ff7e5f;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.restaurant-location {
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.restaurant-location::before {
+  content: "📍";
+  margin-right: 5px;
+}
+
+.view-btn {
+  background: linear-gradient(45deg, #ff7e5f, #feb47b);
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-btn:hover {
+  background: linear-gradient(45deg, #ff6e4c, #ffa866);
+}
+
+.delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #f44336;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 10;
+}
+
+.restaurant-card:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background-color: #f44336;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .restaurant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .restaurant-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .restaurant-image {
+    height: 160px;
+  }
+}
+
+/* Footer styles for home page */
+footer {
+  background-color: #2b2b2b;
+  color: white;
+  margin-top: 60px;
+  padding-bottom: 0;
+  clear: both;
+  position: relative;
+  width: 100%;
+}
+
+.footer-1 {
+  width: 90vw;
+  margin: auto auto;
+  padding: 4rem 0rem;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8rem;
+  border-bottom: 0.2px solid gray;
+}
+
+.first {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  gap: 1.5rem;
+  width: 28%;
+}
+
+.first img {
+  filter: invert();
+  height: 4vh;
+}
+
+.first p {
+  color: gray;
+  font-size: 1.3rem;
+  font-weight: 530;
+  line-height: 2rem;
+}
+
+.media-logos {
+  display: flex;
+  gap: 1.3rem;
+}
+
+.media-logo {
+  background-color: #1e1c19;
+  border-radius: 100%;
+}
+
+.media-logo i {
+  filter: invert();
+  font-size: 1.3rem;
+  padding: 0.45rem;
+}
+
+.second {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.second div {
+  color: white;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.second div span {
+  font-size: 1.6rem;
+}
+
+.second span {
+  color: rgb(240, 112, 84);
+}
+
+.second ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.second ul li {
+  list-style: none;
+  color: gray;
+  font-size: 1.3rem;
+  font-weight: 540;
+}
+
+.copyright {
+  text-align: center;
+  padding: 1.7rem 0rem;
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Footer top */
+.footer-top {
+  height: 30vh;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #2b2b2b;
+  display: flex;
+  align-items: center;
+  color: white;
+  justify-content: space-evenly;
+  border-bottom: 2px solid #777;
+}
+
+.footer-inner-1 span {
+  font-size: larger;
+  font-weight: 500;
+  width: 20vw;
+}
+
+.footer-inner-1 {
+  width: 40vw;
+}
+
+.footer-inner-2 input {
+  height: 6.5vh;
+  width: 30vw;
+  color: white;
+  background: linear-gradient(180deg, #e2e8ff00, #e2e8ff1a);
+  border-radius: 10px;
+  border-color: #2b2b2b;
+  padding-left: 2rem;
+  font-size: larger;
+}
+
+.footer-inner-2 button {
+  height: 7.5vh;
+  width: 15vw;
+  background-color: #f42b03;
+  background-image: linear-gradient(316deg, #f42b03 0%, #ffbe0b 74%);
+  font-size: large;
+  color: white;
+  font-weight: 500;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
+}
+
+.mail {
+  display: flex;
+  gap: 1.2rem;
+}
+
+/* Responsive styles for footer */
+@media only screen and (max-width: 768px) {
+  .footer-1 {
+    flex-direction: column;
+    gap: 3rem;
+    padding: 2rem 0;
+  }
+  
+  .first {
+    width: 100%;
+  }
+  
+  .footer-top {
+    flex-direction: column;
+    height: auto;
+    padding: 20px 0;
+  }
+  
+  .footer-inner-1, .footer-inner-2 {
+    width: 90%;
+    margin: 10px 0;
+  }
+  
+  .footer-inner-2 input {
+    width: 60vw;
+  }
+  
+  .footer-inner-2 button {
+    width: 30vw;
+  }
+}
+
+/* About Section */
+.about-section {
+  background-color: #f9f9f9;
+  padding: 80px 0;
+  margin-top: 50px;
+}
+
+.about-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.about-content h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.about-content > p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto 40px;
+}
+
+.about-features {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.feature {
+  flex: 1;
+  min-width: 250px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.feature i {
+  font-size: 36px;
+  color: #ff7e5f;
+  margin-bottom: 20px;
+}
+
+.feature h3 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.feature p {
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  padding: 80px 0;
+  background-color: white;
+}
+
+.testimonials-section h2 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 50px;
+  color: #333;
+}
+
+.testimonials-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.testimonial {
+  flex: 1;
+  min-width: 300px;
+  max-width: 350px;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.testimonial:hover {
+  transform: translateY(-5px);
+}
+
+.testimonial .quote {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.testimonial .quote::before {
+  content: '"';
+  font-size: 60px;
+  line-height: 0;
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  color: rgba(255, 126, 95, 0.1);
+}
+
+.customer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.customer img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.customer-info h4 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  color: #333;
+}
+
+.customer-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #888;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .about-features {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .feature {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .testimonial {
+    min-width: 250px;
+  }
+}
+
+/* ...existing code... */
