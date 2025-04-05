@@ -1,12 +1,14 @@
 import React from "react";
 
-function RestaurantNavbar() {
+function RestaurantNavbar({ categories = ["Pizza", "Burgers", "Desserts", "Drinks"] }) {
   return (
-    <div className="restaurant-navbar dark_icon dark_color">
-      <li id="dark_color">Order Online</li>
-      <li id="dark_color">Overview</li>
-      <li id="dark_color">Photos</li>
-      <li id="dark_color">Reviews</li>
+    <div className="nav">
+      <ul>
+        <li>All</li>
+        {categories.map((category, index) => (
+          <li key={index}>{category}</li>
+        ))}
+      </ul>
     </div>
   );
 }
