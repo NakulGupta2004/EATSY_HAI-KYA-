@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../Static/blog.css'; // Import blog.css explicitly
 
 function Footer() {
@@ -17,7 +18,7 @@ function Footer() {
       </div>
       <div className="footer-1">
         <div className="first">
-          <img src="images/log.svg" alt="Logo" />
+          <img src="/logo.png" alt="Eatsy Logo" />
           <p>
             We offer a diverse culinary experience with quality ingredients and
             authentic recipes. Join us for a memorable dining experience!
@@ -42,11 +43,11 @@ function Footer() {
             <span>O</span>ur Links
           </div>
           <ul>
-            <li>Home</li>
-            <li>About Us</li>
-            <li>Restaurants</li>
-            <li>Blog</li>
-            <li>Contact</li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/restaurants">Restaurants</Link></li>
+            <li><Link to="/blog">Blog</Link></li> {/* Updated path to /blog (singular) if that's your route */}
+            <li><Link to="/contact">Contact</Link></li>
           </ul>
         </div>
         <div className="second">
@@ -54,11 +55,11 @@ function Footer() {
             <span>O</span>ur Services
           </div>
           <ul>
-            <li>Online Ordering</li>
-            <li>Table Reservations</li>
-            <li>Catering</li>
-            <li>Gift Cards</li>
-            <li>Delivery</li>
+            <li><Link to="/order">Online Ordering</Link></li>
+            <li><Link to="/reservations">Table Reservations</Link></li>
+            <li><Link to="/catering">Catering</Link></li>
+            <li><Link to="/gift-cards">Gift Cards</Link></li>
+            <li><Link to="/delivery">Delivery</Link></li>
           </ul>
         </div>
         <div className="second">
@@ -66,16 +67,16 @@ function Footer() {
             <span>H</span>elp
           </div>
           <ul>
-            <li>FAQs</li>
-            <li>Terms of Service</li>
-            <li>Privacy Policy</li>
-            <li>Payment Methods</li>
-            <li>Support</li>
+            <li><Link to="/faq">FAQs</Link></li>
+            <li><Link to="/terms">Terms of Service</Link></li>
+            <li><Link to="/privacy">Privacy Policy</Link></li>
+            <li><Link to="/payment">Payment Methods</Link></li>
+            <li><Link to="/support">Support</Link></li>
           </ul>
         </div>
       </div>
       <div className="copyright">
-        <p>&copy; 2023 Foodies. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Foodies. All rights reserved.</p>
       </div>
     </footer>
   );

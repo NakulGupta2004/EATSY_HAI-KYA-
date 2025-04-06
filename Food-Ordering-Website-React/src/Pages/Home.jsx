@@ -225,48 +225,19 @@ function Home() {
 
   // Function to handle restaurant card click
   const handleRestaurantClick = (restaurant) => {
-    // Add a page identifier to the restaurant object using the uniqueId if available
-    const restaurantWithPageId = {
-      ...restaurant,
-      // Use existing uniqueId or generate a new one for static restaurants
-      pageId: restaurant.uniqueId || `RESTAURANT: static-${Date.now()}`
-    };
-    
-    // Store the selected restaurant in localStorage to access it from Restaurant page
-    localStorage.setItem('selectedRestaurant', JSON.stringify(restaurantWithPageId));
-    navigate('/restaurant');
+    // Ensure restaurant has an ID, if not generate one
+    const restaurantWithId = restaurant.id ? 
+      restaurant : 
+      { ...restaurant, id: restaurant._id || Date.now().toString() };
+      
+    navigate(`/restaurant/${restaurantWithId.id}`, { 
+      state: { restaurant: restaurantWithId }
+    });
   };
 
   // Sample static restaurants - keeping these intact
   const staticRestaurants = [
-    { 
-      name: "Paradise Taste",
-      rating: 4.5,
-      cuisine: "Italian",
-      image: "images/r1.jpg", 
-      location: "64 Johnson Avenue, NY"
-    },
-    { 
-      name: "Tandoor Spices",
-      rating: 4.2,
-      cuisine: "Indian",
-      image: "images/r2.jpg",
-      location: "238 Central Park, NY" 
-    },
-    { 
-      name: "Wok & Roll",
-      rating: 4.7,
-      cuisine: "Chinese",
-      image: "images/r3.jpg",
-      location: "85 Hudson Street, NY" 
-    },
-    { 
-      name: "Burger Boss",
-      rating: 4.3,
-      cuisine: "American",
-      image: "images/r4.jpg",
-      location: "123 Broadway, NY" 
-    }
+
   ];
 
   return (

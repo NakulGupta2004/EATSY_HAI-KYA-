@@ -62,44 +62,7 @@ function BlogHeader(props) {
             </div>
         </div>
 
-        <div className="head responsive-head">
-            <div className="head-1">
-                <img className="more" src="https://cdn-icons-png.flaticon.com/128/6015/6015685.png" alt=""/>
-                <div className="head-logo imp">
-                    <img src="images/logo-white.png" alt=""/>
-                    <button><span className="material-symbols-outlined">location_on
-                        </span>Location</button>
 
-                </div>
-
-                <div className="head-profile flex">
-                    <img src="https://img.icons8.com/?size=100&id=On3brTbr5kbp&format=png&color=000000" alt=""
-                        />
-                    <div className="line"></div>
-                    <div className="head-me">
-                        <div className="img"><img src="images/Mark.png" alt="" /></div>
-                        <div className="head-me-content">
-                            <p className="grey">Hi, Mark Jecno</p>
-                            <h5>My Account</h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div className="head-2">
-                <div className="head-2-1">
-                    <h1>Blog List</h1>
-                </div>
-                <div className="head-2-2">
-                    <img src="https://img.icons8.com/?size=100&id=BZhTcjGTwoBp&format=png&color=000000" alt=""/>
-                    <p className="grey">HOME&nbsp;/</p>
-                    <h4>Blog List
-                    </h4>
-                </div>
-            </div>
-        </div>
 
         <div id="side-menu">
             <div className="menu-header">

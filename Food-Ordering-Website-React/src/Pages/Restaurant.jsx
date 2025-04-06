@@ -1,454 +1,513 @@
-import React, { useState, useEffect, useMemo } from "react";
-import CartItems from "../Components/CartItems";
-import FoodItems from "../Components/FoodItems";
-import RestrauntHeader from "../Components/RestrauntHeader";
-import RestaurantNavbar from "../Components/RestaurantNavbar";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import "../Static/R1.css";
-import Footer from "../Components/Footer";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { FaStar, FaRegClock, FaMotorcycle, FaShoppingCart, FaTrash, FaHeart, FaPlus, FaPencilAlt, FaTimes } from 'react-icons/fa';
+import axios from 'axios';
+import '../styles/Restaurant.css';
+// Fix import to use default export instead of named export
+// Import Footer component
+import RstHeader from '../Components/RstHeader';
+import Footer from '../Components/Footer';
 
-function Restaurant() {
+// Add a base URL for your API requests
+axios.defaults.baseURL = 'http://localhost:5000'; // Adjust port as needed
+
+const Restaurant = () => {
+  const { id } = useParams();
+  const { state } = useLocation();
   const navigate = useNavigate();
-  
-  // Create a base64 encoded placeholder image directly in the code
-  const noImagePlaceholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f8f8f8'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='20' fill='%23999' text-anchor='middle' dominant-baseline='middle'%3ENo Image Available%3C/text%3E%3C/svg%3E";
-  
-  // Get selected restaurant from localStorage
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  
-  // Add modal state
-  const [showModal, setShowModal] = useState(false);
-  
-  // Add state for active category
-  const [activeCategory, setActiveCategory] = useState("All");
-  
-  // Add state for form data
+  const restaurant = state?.restaurant;
+
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [cart, setCart] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [newDish, setNewDish] = useState({
     name: '',
+    description: '',
     price: '',
-    category: ''
+    category: 'breakfast',
+    image: ''
   });
-  
-  // Add state for image upload
-  const [dishImage, setDishImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  
-  // Add state for toast notification
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
-  
-  // Cart state
-  const [cart, setCart] = useState([]);
-  const [amount, setAmount] = useState(0);
-  const [counter, setCounter] = useState(0);
-  
-  // Add state to track loading
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // Add state for managing food items
-  const [foodItems, setFoodItems] = useState([
-    {
-      name: "Spicy Paneer Pizza",
-      imgPath: "../images/food1.jpg",
-      price: 12.5,
-      category: "Main Course"
-    },
-    {
-      name: "Veg Supreme Pizza",
-      imgPath: "../images/food2.jpg",
-      price: 15,
-      category: "Main Course" 
-    },
-    {
-      name: "Veg Burger",
-      imgPath: "../images/food3.jpg",
-      price: 8,
-      category: "Lunch"
-    },
-  ]);
-  
-  // Filter food items based on selected category
-  const filteredFoodItems = useMemo(() => {
-    if (activeCategory === "All") {
-      return foodItems;
-    } else {
-      return foodItems.filter(item => item.category === activeCategory);
-    }
-  }, [foodItems, activeCategory]);
-  
-  useEffect(() => {
-    // Try to get selected restaurant from localStorage
-    const storedRestaurant = localStorage.getItem('selectedRestaurant');
-    
-    if (storedRestaurant) {
-      const restaurant = JSON.parse(storedRestaurant);
-      setSelectedRestaurant(restaurant);
-      
-      // Fetch dishes for this restaurant
-      if (restaurant.id) {
-        fetchDishesForRestaurant(restaurant.id);
-      }
-      
-      // Clear localStorage after retrieving data
-      localStorage.removeItem('selectedRestaurant');
-      
-      // Set the page title with unique ID
-      if (restaurant.pageId) {
-        document.title = `${restaurant.pageId}`;
-      }
-    }
-  }, []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Function to fetch dishes for a specific restaurant
-  const fetchDishesForRestaurant = async (restaurantId) => {
+  const categories = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Desserts', 'Beverages'];
+
+  useEffect(() => {
+    if (!restaurant) {
+      navigate('/');
+      return;
+    }
+    
+    fetchMenuItems();
+    window.scrollTo(0, 0);
+  }, [restaurant, navigate]);
+
+  const fetchMenuItems = async () => {
     try {
-      setIsLoading(true);
-      const response = await axios.get(`/api/restaurants/${restaurantId}/dishes`);
-      if (response.data && response.data.dishes) {
-        setFoodItems(response.data.dishes);
+      setLoading(true);
+      console.log(`Fetching menu items for restaurant ID: ${restaurant.id || id}`);
+      
+      // Check if we have a valid ID
+      if (!restaurant.id && !id) {
+        console.error("No restaurant ID available");
+        throw new Error("Restaurant ID not available");
       }
-    } catch (error) {
-      console.error("Error fetching dishes:", error);
-      showToast('Failed to load dishes for this restaurant', 'error');
+
+      // Make sure to use the correct endpoint format
+      const response = await axios.get(`/api/restaurants/${restaurant._id || restaurant.id || id}/dishes`);
+      
+      console.log("Menu items response:", response.data);
+      
+      // Check if the response has a dishes property
+      if (response.data.dishes) {
+        setMenuItems(response.data.dishes);
+      } else if (Array.isArray(response.data)) {
+        setMenuItems(response.data);
+      } else {
+        console.warn("Unexpected response format:", response.data);
+        setMenuItems([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch menu items:", err);
+      // Use sample menu items if API fails
+      setMenuItems([
+        {
+          id: 1,
+          name: 'Classic Pancakes',
+          description: 'Fluffy pancakes served with maple syrup and fresh berries',
+          price: 199,
+          image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGFuY2FrZXN8ZW58MHx8MHx8fDA%3D',
+          category: 'breakfast'
+        },
+        {
+          id: 2,
+          name: 'Avocado Toast',
+          description: 'Toasted sourdough bread topped with avocado, poached eggs, and chili flakes',
+          price: 249,
+          image: 'https://images.unsplash.com/photo-1588137378633-dea1148094bb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZvY2FkbyUyMHRvYXN0fGVufDB8fDB8fHww',
+          category: 'breakfast'
+        },
+        {
+          id: 3,
+          name: 'Butter Chicken',
+          description: 'Tender chicken in a rich buttery tomato sauce with spices',
+          price: 349,
+          image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnV0dGVyJTIwY2hpY2tlbnxlbnwwfHwwfHx8MA%3D%3D',
+          category: 'lunch'
+        },
+      ]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleAddToCart = (item) => {
-    const itemIndex = cart.findIndex((cartItem) => cartItem.name === item.name);
-    setAmount(amount + item.price);
-    setCounter(counter + 1);
-    if (itemIndex >= 0) {
-      const newCart = [...cart];
-      newCart[itemIndex].quantity += 1;
-      setCart(newCart);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewDish(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddDish = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setError(null);
+      
+      if (!restaurant._id && !restaurant.id && !id) {
+        setError("Restaurant ID not available");
+        return;
+      }
+      
+      console.log('Adding dish:', newDish);
+      console.log('Restaurant ID:', restaurant._id || restaurant.id || id);
+      
+      // Use FormData to support file uploads if needed
+      const formData = new FormData();
+      formData.append('name', newDish.name);
+      formData.append('description', newDish.description);
+      formData.append('price', newDish.price);
+      formData.append('category', newDish.category);
+      formData.append('image', newDish.image);
+      
+      const response = await axios.post(
+        `/api/restaurants/${restaurant._id || restaurant.id || id}/dishes`, 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+      
+      console.log('Dish added response:', response.data);
+      
+      // Handle different response formats
+      const addedDish = response.data.dish || response.data;
+      
+      // Add the new dish to the menu items
+      setMenuItems(prev => [...prev, addedDish]);
+      
+      // Reset form and close modal
+      setNewDish({
+        name: '',
+        description: '',
+        price: '',
+        category: 'breakfast',
+        image: ''
+      });
+      setIsModalOpen(false);
+    } catch (err) {
+      setError("Failed to add dish. Please try again.");
+      console.error("Failed to add dish:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteDish = async (dishId) => {
+    if (!window.confirm("Are you sure you want to delete this dish?")) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('Deleting dish:', dishId);
+      console.log('Restaurant ID:', restaurant._id || restaurant.id || id);
+      
+      await axios.delete(`/api/restaurants/${restaurant._id || restaurant.id || id}/dishes/${dishId}`);
+      
+      // Remove the dish from the menu items
+      setMenuItems(prev => prev.filter(item => item.id !== dishId && item._id !== dishId));
+      
+    } catch (err) {
+      setError("Failed to delete dish. Please try again.");
+      console.error("Failed to delete dish:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addToCart = (item) => {
+    const existingItem = cart.find(cartItem => cartItem.id === item.id);
+    if (existingItem) {
+      setCart(cart.map(cartItem => 
+        cartItem.id === item.id 
+          ? { ...cartItem, quantity: cartItem.quantity + 1 } 
+          : cartItem
+      ));
     } else {
       setCart([...cart, { ...item, quantity: 1 }]);
     }
   };
 
-  const handleRemoveFromCart = (item) => {
-    const itemIndex = cart.findIndex((cartItem) => cartItem.name === item.name);
-    setAmount(amount - item.price);
-    setCounter(counter - 1);
-    if (itemIndex >= 0) {
-      const newCart = [...cart];
-
-      if (newCart[itemIndex].quantity > 1) {
-        newCart[itemIndex].quantity -= 1;
-      } else {
-        newCart.splice(itemIndex, 1);
-      }
-
-      setCart(newCart);
+  const removeFromCart = (id) => {
+    const existingItem = cart.find(item => item.id === id);
+    
+    if (existingItem.quantity === 1) {
+      setCart(cart.filter(item => item.id !== id));
+    } else {
+      setCart(cart.map(item => 
+        item.id === id 
+          ? { ...item, quantity: item.quantity - 1 } 
+          : item
+      ));
     }
   };
 
-  // Add function to handle modal close
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
-
-  // Add function to handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewDish({
-      ...newDish,
-      [name]: value
-    });
-  };
-  
-  // Add function to handle image change
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setDishImage(file);
-      
-      // Create a preview URL
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  
-  // Add function to show toast notification
-  const showToast = (message, type) => {
-    setToast({ show: true, message, type });
-    
-    // Auto-hide toast after 3 seconds
-    setTimeout(() => {
-      setToast({ show: false, message: '', type: '' });
-    }, 3000);
-  };
-  
-  // Updated function to handle form submission with API call
-  const handleAddDish = async (e) => {
-    e.preventDefault();
-    
-    // Validate form
-    if (!newDish.name || !newDish.price || !newDish.category) {
-      showToast('Please fill all required fields', 'error');
-      return;
-    }
-    
-    if (!selectedRestaurant || !selectedRestaurant.id) {
-      showToast('Cannot add dish - restaurant not identified', 'error');
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      // Create a FormData object for multipart/form-data
-      const formData = new FormData();
-      formData.append('name', newDish.name);
-      formData.append('price', newDish.price);
-      formData.append('category', newDish.category);
-      
-      if (dishImage) {
-        formData.append('image', dishImage);
-      }
-      
-      // Send to server
-      const response = await axios.post(
-        `/api/restaurants/${selectedRestaurant.id}/dishes`, 
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
-      
-      // Add the new dish to the state with the returned data (includes server-generated ID)
-      setFoodItems([...foodItems, response.data.dish]);
-      
-      // Show success toast
-      showToast('Dish added successfully!', 'success');
-      
-      // Reset form and close modal
-      setNewDish({ name: '', price: '', category: '' });
-      setDishImage(null);
-      setImagePreview(null);
-      setShowModal(false);
-      
-    } catch (error) {
-      console.error("Error adding dish:", error);
-      showToast(error.response?.data?.message || 'Failed to add dish', 'error');
-    } finally {
-      setIsLoading(false);
-    }
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   return (
-    <div className="rest-page">
-      <RestrauntHeader 
-        restaurantInfo={selectedRestaurant}
-        cartcounter={counter} 
-        data={cart} 
-        addfun={handleAddToCart} 
-        amount={amount} 
-        subfun={handleRemoveFromCart} 
-      />
-
-      {/* Restaurant Banner */}
-      {selectedRestaurant && (
-        <div className="rest-banner">
-          <div className="rest-banner-img-container">
-            <img className="rest-banner-img" src={selectedRestaurant.image} alt={selectedRestaurant.name} />
-          </div>
-          <div className="rest-banner-content">
-            <h1 className="rest-banner-title">{selectedRestaurant.name}</h1>
-            <div className="rest-banner-rating">
-              <span>★</span> {selectedRestaurant.rating}
-            </div>
-            <p className="rest-banner-cuisine">{selectedRestaurant.cuisine}</p>
-            <p className="rest-banner-location">{selectedRestaurant.location}</p>
-            <p className="rest-banner-desc">{selectedRestaurant.description}</p>
-          </div>
-        </div>
-      )}
-
-      <div className="rest-content-container">
-        <main className="rest-main">
-          <div className="rest-main-container">
-            <div className="rest-main-left">
-              <RestaurantNavbar 
-                activeCategory={activeCategory}
-                setActiveCategory={setActiveCategory}
-              />
-              <div className="rest-content">
-                <div className="rest-search-container">
-                  <div className="rest-search-bar">
-                    <span className="search-icon">🔍</span>
-                    <input type="text" placeholder="Search dishes..." />
-                  </div>
+    <>
+      <RstHeader/>
+      <div className="restaurant-container">
+        {restaurant && (
+          <>
+            <div className="restaurant-hero" style={{ backgroundImage: `url(${restaurant.imageUrl || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVzdGF1cmFudCUyMGludGVyaW9yfGVufDB8fDB8fHww'})` }}>
+              <div className="hero-overlay">
+                <div className="hero-content">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <h1>{restaurant.name}</h1>
+                    <div className="restaurant-meta">
+                      <span><FaStar className="icon" /> {restaurant.rating}</span>
+                      <span>{restaurant.cuisine}</span>
+                      <span><FaRegClock className="icon" /> {restaurant.deliveryTime}</span>
+                    </div>
+                    <button className="favorite-btn">
+                      <FaHeart className="heart-icon" /> Save
+                    </button>
+                  </motion.div>
                 </div>
-                {isLoading ? (
-                  <div className="rest-loading">
-                    <div className="rest-spinner"></div>
-                  </div>
-                ) : (
-                  <div className="rest-food-grid">
-                    {filteredFoodItems.length > 0 ? (
-                      filteredFoodItems.map((item, index) => (
-                        <div className="rest-food-card" key={index}>
-                          <div className="rest-food-img-container">
-                            <img 
-                              className="rest-food-img" 
-                              src={item.imgPath || noImagePlaceholder} 
-                              alt={item.name}
-                              onError={(e) => {
-                                e.target.onerror = null; // Prevent infinite loop
-                                e.target.src = noImagePlaceholder;
-                              }}
-                            />
-                          </div>
-                          <div className="rest-food-content">
-                            <h3 className="rest-food-title">{item.name}</h3>
-                            {item.category && (
-                              <span className="rest-food-category">{item.category}</span>
-                            )}
-                            <p className="rest-food-price">${item.price.toFixed(2)}</p>
-                            <button 
-                              className="rest-add-btn"
-                              onClick={() => handleAddToCart(item)}
-                            >
-                              Add to Cart
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="rest-no-dishes">
-                        <p>No dishes available in this category. Add some dishes to get started!</p>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
-            <CartItems data={cart} addfun={handleAddToCart} amount={amount} subfun={handleRemoveFromCart}/>
-          </div>
-        </main>
-      </div>
-      
-      <Footer />
-      
-      {/* Add Dish Button */}
-      <div className="rest-add-floating-btn" onClick={() => setShowModal(true)}>
-        <span>+</span>
-        <span className="rest-btn-text">Add Dish</span>
-      </div>
 
-      {/* Add Dish Modal */}
-      {showModal && (
-        <div className="rest-modal-overlay">
-          <div className="rest-modal-container">
-            <div className="rest-modal-header">
-              <h2>Add New Dish</h2>
-              <button className="rest-modal-close" onClick={handleModalClose}>×</button>
-            </div>
-            <div className="rest-modal-body">
-              <form onSubmit={handleAddDish}>
-                <div className="rest-form-group">
-                  <label htmlFor="name">Dish Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    name="name"
-                    value={newDish.name}
-                    onChange={handleInputChange}
-                    placeholder="Enter dish name" 
-                    required 
-                  />
+            <div className="content-wrapper">
+              <div className="main-content">
+                <div className="category-tabs">
+                  {categories.map(category => (
+                    <button 
+                      key={category}
+                      className={`category-tab ${selectedCategory === category.toLowerCase() ? 'active' : ''}`}
+                      onClick={() => setSelectedCategory(category.toLowerCase())}
+                    >
+                      {category}
+                    </button>
+                  ))}
                 </div>
-                <div className="rest-form-group">
-                  <label htmlFor="price">Price ($)</label>
-                  <input 
-                    type="number" 
-                    id="price" 
-                    name="price"
-                    value={newDish.price}
-                    onChange={handleInputChange}
-                    placeholder="Enter price" 
-                    step="0.01" 
-                    required 
-                  />
-                </div>
-                <div className="rest-form-group">
-                  <label htmlFor="category">Category</label>
-                  <select 
-                    id="category" 
-                    name="category"
-                    value={newDish.category}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select category</option>
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Dinner">Dinner</option>
-                    <option value="Appetizers">Appetizers</option>
-                    <option value="Main Course">Main Course</option>
-                    <option value="Desserts">Desserts</option>
-                    <option value="Beverages">Beverages</option>
-                    <option value="Chef's Specials">Chef's Specials</option>
-                    <option value="Sides">Sides</option>
-                  </select>
-                </div>
-                <div className="rest-form-group">
-                  <label htmlFor="dishImage">Image</label>
-                  <input 
-                    type="file" 
-                    id="dishImage" 
-                    onChange={handleImageChange}
-                    accept="image/*" 
-                  />
-                </div>
-                
-                {/* Image preview */}
-                {imagePreview && (
-                  <div className="rest-image-preview">
-                    <img src={imagePreview} alt="Preview" />
+
+                {loading ? (
+                  <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>Loading menu...</p>
                   </div>
+                ) : (
+                  <motion.div 
+                    className="menu-container"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: { 
+                        opacity: 1,
+                        transition: { staggerChildren: 0.1 }
+                      }
+                    }}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    {menuItems
+                      .filter(item => selectedCategory === 'all' || item.category === selectedCategory.toLowerCase())
+                      .map((item) => (
+                        <motion.div 
+                          key={item.id}
+                          className="menu-card"
+                          variants={{
+                            hidden: { y: 20, opacity: 0 },
+                            visible: { y: 0, opacity: 1 }
+                          }}
+                        >
+                          <div className="menu-image">
+                            <img src={item.image} alt={item.name} />
+                            <button className="quick-add" onClick={() => addToCart(item)}>+</button>
+                          </div>
+                          <div className="menu-details">
+                            <h3>{item.name}</h3>
+                            <p>{item.description}</p>
+                            <div className="menu-footer">
+                              <span className="price">₹{item.price}</span>
+                              <div className="action-buttons">
+                                <button className="add-btn" onClick={() => addToCart(item)}>
+                                  Add to order
+                                </button>
+                                <button className="delete-btn" onClick={() => handleDeleteDish(item.id)}>
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                  </motion.div>
                 )}
-                
-                <div className="rest-form-actions">
-                  <button 
-                    type="button" 
-                    className="rest-cancel-btn" 
-                    onClick={handleModalClose}
-                    disabled={isLoading}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="rest-submit-btn"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Adding...' : 'Add Dish'}
-                  </button>
+              </div>
+
+              <div className="order-sidebar">
+                <div className="sticky-order">
+                  <h2><FaShoppingCart className="cart-icon" /> Your Order</h2>
+                  
+                  {cart.length === 0 ? (
+                    <div className="empty-cart">
+                      <img src="https://cdn-icons-png.flaticon.com/512/5058/5058454.png" alt="Empty cart" />
+                      <p>Your cart is empty</p>
+                      <small>Add items from the menu to get started</small>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="cart-items-list">
+                        {cart.map((item) => (
+                          <div key={item.id} className="cart-item">
+                            <div className="item-detail">
+                              <div className="quantity">{item.quantity}x</div>
+                              <div className="item-name-price">
+                                <h4>{item.name}</h4>
+                                <span className="item-price">₹{item.price * item.quantity}</span>
+                              </div>
+                            </div>
+                            <div className="item-actions">
+                              <button onClick={() => removeFromCart(item.id)} className="remove-btn">
+                                <FaTrash />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="order-summary">
+                        <div className="summary-row">
+                          <span>Subtotal</span>
+                          <span>₹{calculateTotal()}</span>
+                        </div>
+                        <div className="summary-row">
+                          <span>Delivery Fee</span>
+                          <span>₹30</span>
+                        </div>
+                        <div className="summary-row">
+                          <span>Taxes</span>
+                          <span>₹{(calculateTotal() * 0.05).toFixed(2)}</span>
+                        </div>
+                        <div className="summary-row total">
+                          <span>Total</span>
+                          <span>₹{(calculateTotal() * 1.05 + 30).toFixed(2)}</span>
+                        </div>
+                        
+                        <button className="checkout-btn">
+                          <FaMotorcycle className="icon" /> Proceed to Checkout
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </form>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Toast Notification */}
-      {toast.show && (
-        <div className={`rest-toast ${toast.type === 'success' ? 'rest-toast-success' : 'rest-toast-error'}`}>
-          <div className="rest-toast-message">{toast.message}</div>
-          <button className="rest-toast-close" onClick={() => setToast({...toast, show: false})}>×</button>
-        </div>
-      )}
-    </div>
+
+            {/* Admin button */}
+            <motion.button 
+              className="admin-add-button"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setIsModalOpen(true)}
+            >
+              <FaPlus />
+            </motion.button>
+            
+            {/* Add Dish Modal */}
+            <AnimatePresence>
+              {isModalOpen && (
+                <motion.div 
+                  className="modal-overlay"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <motion.div 
+                    className="modal-content"
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 50, opacity: 0 }}
+                  >
+                    <div className="modal-header">
+                      <h2>Add New Dish</h2>
+                      <button className="close-modal" onClick={() => setIsModalOpen(false)}>
+                        <FaTimes />
+                      </button>
+                    </div>
+                    
+                    {error && <div className="error-message">{error}</div>}
+                    
+                    <form onSubmit={handleAddDish} className="dish-form">
+                      <div className="form-group">
+                        <label htmlFor="name">Dish Name</label>
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          value={newDish.name}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Enter dish name"
+                        />
+                      </div>
+                      
+                      <div className="form-group">
+                        <label htmlFor="description">Description</label>
+                        <textarea
+                          id="description"
+                          name="description"
+                          value={newDish.description}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Describe the dish"
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label htmlFor="price">Price (₹)</label>
+                          <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            value={newDish.price}
+                            onChange={handleInputChange}
+                            required
+                            placeholder="199"
+                            min="0"
+                          />
+                        </div>
+                        
+                        <div className="form-group">
+                          <label htmlFor="category">Category</label>
+                          <select
+                            id="category"
+                            name="category"
+                            value={newDish.category}
+                            onChange={handleInputChange}
+                            required
+                          >
+                            {categories.filter(cat => cat !== 'All').map(cat => (
+                              <option key={cat} value={cat.toLowerCase()}>
+                                {cat}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div className="form-group">
+                        <label htmlFor="image">Image URL</label>
+                        <input
+                          type="url"
+                          id="image"
+                          name="image"
+                          value={newDish.image}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="https://example.com/image.jpg"
+                        />
+                      </div>
+                      
+                      <div className="form-actions">
+                        <button 
+                          type="button" 
+                          className="cancel-btn"
+                          onClick={() => setIsModalOpen(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          type="submit" 
+                          className="submit-btn"
+                          disabled={loading}
+                        >
+                          {loading ? 'Adding...' : 'Add Dish'}
+                        </button>
+                      </div>
+                    </form>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        )}
+      </div>
+      <Footer />
+    </>
   );
-}
+};
 
 export default Restaurant;
