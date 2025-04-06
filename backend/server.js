@@ -28,6 +28,12 @@ if (!fs.existsSync(restaurantImagesDir)) {
   console.log('Created restaurant-images directory');
 }
 
+// Ensure this middleware is added before your routes
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // MongoDB Connection
 console.log('Attempting to connect to MongoDB...');
 mongoose.connect(process.env.MONGODB_URI)
@@ -52,12 +58,9 @@ mongoose.connection.on('disconnected', () => {
 
 // Routes
 // Use blog routes
-app.use('/api/blogs', blogRoutes);
+app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api', dishRoutes);
-
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Simple test route
 app.get('/', (req, res) => {

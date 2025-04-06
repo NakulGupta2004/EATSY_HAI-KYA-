@@ -1,0 +1,123 @@
+.rest-food-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.rest-delete-btn {
+  padding: 8px 16px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.rest-delete-btn:hover {
+  background-color: #cc0000;
+}
+
+.rest-food-img-container {
+  position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+.rest-food-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.delete-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #ff4444;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rest-food-card:hover .delete-icon {
+  opacity: 1;
+}
+
+.delete-icon:hover {
+  background-color: rgba(255, 0, 0, 1);
+}
+
+.rest-food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 20px;
+}
+
+.rest-food-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.rest-food-card:hover {
+  transform: translateY(-5px);
+}
+
+.rest-food-content {
+  padding: 1rem;
+}
+
+.rest-food-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.rest-food-category {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.rest-food-price {
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 0.5rem 0;
+}
+
+.rest-add-btn {
+  width: 100%;
+  padding: 8px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.rest-add-btn:hover {
+  background-color: #45a049;
+}
+
+.rest-no-dishes {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}

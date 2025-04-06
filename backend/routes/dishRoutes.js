@@ -164,4 +164,16 @@ router.delete('/restaurants/:restaurantId/dishes/:dishId', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedDish = await Dish.findByIdAndDelete(req.params.id);
+    if (!deletedDish) {
+      return res.status(404).json({ message: 'Dish not found' });
+    }
+    res.status(200).json({ message: 'Dish deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

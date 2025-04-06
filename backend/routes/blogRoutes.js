@@ -98,25 +98,17 @@ router.get('/:id', async (req, res) => {
 // Delete a blog post
 router.delete('/:id', async (req, res) => {
   try {
-    const blogPost = await BlogPost.findById(req.params.id);
+    console.log('Attempting to delete blog with ID:', req.params.id);
+    const deletedBlog = await BlogPost.findByIdAndDelete(req.params.id);
     
-    if (!blogPost) {
-      return res.status(404).json({ message: 'Blog post not found' });
+    if (!deletedBlog) {
+      return res.status(404).json({ message: 'Blog not found' });
     }
     
-    // Delete the image file from the server if it exists
-    if (blogPost.image && blogPost.image.startsWith('/uploads/')) {
-      const imagePath = path.join(__dirname, '..', blogPost.image);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
-    }
-    
-    await BlogPost.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Blog post deleted successfully' });
+    res.status(200).json({ message: 'Blog deleted successfully', blog: deletedBlog });
   } catch (error) {
-    console.error('Error deleting blog post:', error);
-    res.status(500).json({ message: 'Server error while deleting blog post' });
+    console.error('Delete error:', error);
+    res.status(500).json({ message: 'Error deleting blog', error: error.message });
   }
 });
 

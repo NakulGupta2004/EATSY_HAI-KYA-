@@ -1,26 +1,25 @@
 import React from "react";
 
 function RestaurantNavbar({ activeCategory, setActiveCategory }) {
-  // Categories for a restaurant menu
   const categories = [
-    "All", 
-    "Breakfast", 
-    "Lunch", 
-    "Dinner", 
-    "Appetizers", 
+    "All",
+    "Breakfast",
+    "Lunch",
+    "Dinner",
+    "Appetizers",
     "Main Course",
-    "Desserts", 
-    "Beverages", 
+    "Desserts",
+    "Beverages",
     "Chef's Specials",
     "Sides"
   ];
 
   return (
-    <div className="rest-navbar">
+    <nav className="rest-navbar">
       <ul>
-        {categories.map((category, index) => (
-          <li 
-            key={index}
+        {categories.map((category) => (
+          <li
+            key={category}
             className={activeCategory === category ? "active" : ""}
             onClick={() => setActiveCategory(category)}
           >
@@ -28,7 +27,7 @@ function RestaurantNavbar({ activeCategory, setActiveCategory }) {
           </li>
         ))}
       </ul>
-    </div>
+    </nav>
   );
 }
 
