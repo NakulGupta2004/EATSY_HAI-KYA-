@@ -3,7 +3,6 @@ import CartItems from "../Components/CartItems";
 import FoodItems from "../Components/FoodItems";
 import RestrauntHeader from "../Components/RestrauntHeader";
 import RestaurantNavbar from "../Components/RestaurantNavbar";
-import SearchBar from "../Components/SearchBar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../Static/R1.css";
@@ -11,6 +10,9 @@ import Footer from "../Components/Footer";
 
 function Restaurant() {
   const navigate = useNavigate();
+  
+  // Create a base64 encoded placeholder image directly in the code
+  const noImagePlaceholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f8f8f8'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='20' fill='%23999' text-anchor='middle' dominant-baseline='middle'%3ENo Image Available%3C/text%3E%3C/svg%3E";
   
   // Get selected restaurant from localStorage
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
@@ -297,11 +299,11 @@ function Restaurant() {
                           <div className="rest-food-img-container">
                             <img 
                               className="rest-food-img" 
-                              src={item.imgPath || "https://via.placeholder.com/300x200?text=Food+Image"} 
+                              src={item.imgPath || noImagePlaceholder} 
                               alt={item.name}
                               onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
+                                e.target.onerror = null; // Prevent infinite loop
+                                e.target.src = noImagePlaceholder;
                               }}
                             />
                           </div>
