@@ -1613,7 +1613,7 @@ hr {
 /* Main Content Container */
 .rest-content-container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 0;
   padding: 20px;
 }
 
@@ -1674,7 +1674,7 @@ hr {
 }
 
 .rest-search-bar input {
-  width: 100%;
+  width: 20%;
   padding: 12px 15px 12px 40px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -2111,7 +2111,7 @@ hr {
 /* Main Content Container */
 .rest-content-container {
   max-width: 1300px;
-  margin: 0 auto;
+  margin: 0 0;
   padding: 0 30px 50px;
 }
 
@@ -2177,7 +2177,7 @@ hr {
 }
 
 .rest-search-bar input {
-  width: 100%;
+  width: 20%;
   padding: 16px 20px 16px 45px;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -2708,13 +2708,14 @@ hr {
 
 
 .rest-main-container {
-  display: flex
-;
-  gap: 20px;
-  width: 90vw;
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 .rest-search-bar input {
-  width: 87%;
+  width: 20%;
   padding: 16px 20px 16px 45px;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -2722,4 +2723,32 @@ hr {
   outline: none;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
   transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Fix for restaurant navbar and search bar */
+
+.rest-navbar ul {
+  display: flex;
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.rest-navbar ul::-webkit-scrollbar {
+  height: 4px;
+}
+
+.rest-navbar ul::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rest-navbar ul::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }

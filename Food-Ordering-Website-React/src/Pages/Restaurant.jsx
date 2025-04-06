@@ -1,21 +1,25 @@
+import React, { useState, useEffect, useMemo } from "react";
 import CartItems from "../Components/CartItems";
 import FoodItems from "../Components/FoodItems";
 import RestrauntHeader from "../Components/RestrauntHeader";
 import RestaurantNavbar from "../Components/RestaurantNavbar";
 import SearchBar from "../Components/SearchBar";
-import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../Static/R1.css";
 import Footer from "../Components/Footer";
-import axios from "axios";
 
 function Restaurant() {
   const navigate = useNavigate();
   
   // Get selected restaurant from localStorage
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  
   // Add modal state
   const [showModal, setShowModal] = useState(false);
+  
+  // Add state for active category
+  const [activeCategory, setActiveCategory] = useState("All");
   
   // Add state for form data
   const [newDish, setNewDish] = useState({
@@ -31,30 +35,44 @@ function Restaurant() {
   // Add state for toast notification
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   
+  // Cart state
+  const [cart, setCart] = useState([]);
+  const [amount, setAmount] = useState(0);
+  const [counter, setCounter] = useState(0);
+  
+  // Add state to track loading
+  const [isLoading, setIsLoading] = useState(false);
+  
   // Add state for managing food items
   const [foodItems, setFoodItems] = useState([
     {
       name: "Spicy Paneer Pizza",
       imgPath: "../images/food1.jpg",
       price: 12.5,
-      category: "Pizza"
+      category: "Main Course"
     },
     {
       name: "Veg Supreme Pizza",
       imgPath: "../images/food2.jpg",
       price: 15,
-      category: "Pizza" 
+      category: "Main Course" 
     },
     {
       name: "Veg Burger",
       imgPath: "../images/food3.jpg",
       price: 8,
-      category: "Burger"
+      category: "Lunch"
     },
   ]);
   
-  // Add state to track loading
-  const [isLoading, setIsLoading] = useState(false);
+  // Filter food items based on selected category
+  const filteredFoodItems = useMemo(() => {
+    if (activeCategory === "All") {
+      return foodItems;
+    } else {
+      return foodItems.filter(item => item.category === activeCategory);
+    }
+  }, [foodItems, activeCategory]);
   
   useEffect(() => {
     // Try to get selected restaurant from localStorage
@@ -95,14 +113,10 @@ function Restaurant() {
     }
   };
 
-  const [cart, setCart] = useState([]);
-  const [amount, setamount] = useState(0);
-  const [counter, setcounter] = useState(0);
-
   const handleAddToCart = (item) => {
     const itemIndex = cart.findIndex((cartItem) => cartItem.name === item.name);
-    setamount(amount + item.price);
-    setcounter(counter + 1);
+    setAmount(amount + item.price);
+    setCounter(counter + 1);
     if (itemIndex >= 0) {
       const newCart = [...cart];
       newCart[itemIndex].quantity += 1;
@@ -114,8 +128,8 @@ function Restaurant() {
 
   const handleRemoveFromCart = (item) => {
     const itemIndex = cart.findIndex((cartItem) => cartItem.name === item.name);
-    setamount(amount - item.price);
-    setcounter(counter - 1);
+    setAmount(amount - item.price);
+    setCounter(counter - 1);
     if (itemIndex >= 0) {
       const newCart = [...cart];
 
@@ -260,16 +274,10 @@ function Restaurant() {
         <main className="rest-main">
           <div className="rest-main-container">
             <div className="rest-main-left">
-              <div className="rest-navbar">
-                <ul>
-                  <li className="active">All</li>
-                  <li>Pizza</li>
-                  <li>Burger</li>
-                  <li>Pasta</li>
-                  <li>Desserts</li>
-                  <li>Drinks</li>
-                </ul>
-              </div>
+              <RestaurantNavbar 
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
+              />
               <div className="rest-content">
                 <div className="rest-search-container">
                   <div className="rest-search-bar">
@@ -277,28 +285,48 @@ function Restaurant() {
                     <input type="text" placeholder="Search dishes..." />
                   </div>
                 </div>
-                <div className="rest-food-grid">
-                  {foodItems.map((item, index) => (
-                    <div className="rest-food-card" key={index}>
-                      <div className="rest-food-img-container">
-                        <img className="rest-food-img" src={item.imgPath} alt={item.name} />
+                {isLoading ? (
+                  <div className="rest-loading">
+                    <div className="rest-spinner"></div>
+                  </div>
+                ) : (
+                  <div className="rest-food-grid">
+                    {filteredFoodItems.length > 0 ? (
+                      filteredFoodItems.map((item, index) => (
+                        <div className="rest-food-card" key={index}>
+                          <div className="rest-food-img-container">
+                            <img 
+                              className="rest-food-img" 
+                              src={item.imgPath || "https://via.placeholder.com/300x200?text=Food+Image"} 
+                              alt={item.name}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
+                              }}
+                            />
+                          </div>
+                          <div className="rest-food-content">
+                            <h3 className="rest-food-title">{item.name}</h3>
+                            {item.category && (
+                              <span className="rest-food-category">{item.category}</span>
+                            )}
+                            <p className="rest-food-price">${item.price.toFixed(2)}</p>
+                            <button 
+                              className="rest-add-btn"
+                              onClick={() => handleAddToCart(item)}
+                            >
+                              Add to Cart
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rest-no-dishes">
+                        <p>No dishes available in this category. Add some dishes to get started!</p>
                       </div>
-                      <div className="rest-food-content">
-                        <h3 className="rest-food-title">{item.name}</h3>
-                        {item.category && (
-                          <span className="rest-food-category">{item.category}</span>
-                        )}
-                        <p className="rest-food-price">${item.price}</p>
-                        <button 
-                          className="rest-add-btn"
-                          onClick={() => handleAddToCart(item)}
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <CartItems data={cart} addfun={handleAddToCart} amount={amount} subfun={handleRemoveFromCart}/>
@@ -359,11 +387,15 @@ function Restaurant() {
                     required
                   >
                     <option value="">Select category</option>
-                    <option value="Pizza">Pizza</option>
-                    <option value="Burger">Burger</option>
-                    <option value="Pasta">Pasta</option>
-                    <option value="Dessert">Dessert</option>
-                    <option value="Drink">Drink</option>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                    <option value="Appetizers">Appetizers</option>
+                    <option value="Main Course">Main Course</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Beverages">Beverages</option>
+                    <option value="Chef's Specials">Chef's Specials</option>
+                    <option value="Sides">Sides</option>
                   </select>
                 </div>
                 <div className="rest-form-group">
