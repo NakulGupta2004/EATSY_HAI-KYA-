@@ -292,12 +292,12 @@ function Home() {
                 location: restaurant.location,
                 rating: restaurant.rating,
                 image: restaurant.image.startsWith('/') ? 
-                  `http://localhost:5000${restaurant.image}` : restaurant.image
+                  `https://eatsy-hai-kya.onrender.com/${restaurant.image}` : restaurant.image
               })}
             >
               <div className="restaurant-image">
                 <img 
-                  src={restaurant.image.startsWith('/') ? `http://localhost:5000${restaurant.image}` : restaurant.image} 
+                  src={restaurant.image.startsWith('/') ? `https://eatsy-hai-kya.onrender.com/${restaurant.image}` : restaurant.image} 
                   alt={restaurant.name}
                   onError={(e) => {
                     e.target.onerror = null;
@@ -336,7 +336,7 @@ function Home() {
                     location: restaurant.location,
                     rating: restaurant.rating,
                     image: restaurant.image.startsWith('/') ? 
-                      `http://localhost:5000${restaurant.image}` : restaurant.image
+                      `https://eatsy-hai-kya.onrender.com/${restaurant.image}` : restaurant.image
                   });
                 }}
               >

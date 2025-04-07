@@ -46,7 +46,7 @@ function Blogs() {
         // Transform the data to match our component structure
         const transformedBlogs = response.data.posts.map(blog => ({
           id: blog._id,
-          img: blog.image.startsWith('/') ? `http://localhost:5000${blog.image}` : blog.image,
+          img: blog.image.startsWith('/') ? `https://eatsy-hai-kya.onrender.com/${blog.image}` : blog.image,
           title: blog.title,
           content: blog.content,
           author: blog.author,
@@ -182,7 +182,7 @@ function Blogs() {
       // Add the new blog to the state
       const newBlog = {
         id: response.data._id,
-        img: response.data.image.startsWith('/') ? `http://localhost:5000${response.data.image}` : response.data.image,
+        img: response.data.image.startsWith('/') ? `https://eatsy-hai-kya.onrender.com/${response.data.image}` : response.data.image,
         title: response.data.title,
         content: response.data.content,
         author: response.data.author,

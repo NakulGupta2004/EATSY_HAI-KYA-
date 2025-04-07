@@ -10,7 +10,7 @@ import RstHeader from '../Components/RstHeader';
 import Footer from '../Components/Footer';
 
 // Add a base URL for your API requests
-axios.defaults.baseURL = 'http://localhost:5000'; // Adjust port as needed
+axios.defaults.baseURL = 'https://eatsy-hai-kya.onrender.com/'; // Adjust port as needed
 
 const Restaurant = () => {
   const { id } = useParams();
